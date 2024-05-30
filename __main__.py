@@ -7,6 +7,7 @@ from game.globals import *
 
 # Importing classes
 from game.car import Car
+from game.track import Track
 
 pygame.init()
 
@@ -15,12 +16,15 @@ pygame.init()
 font = pygame.font.SysFont("Segoe", 26)
 
 # Window
-window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+window = pygame.display.set_mode((1500, 700), pygame.RESIZABLE)
 
 clock = pygame.time.Clock()
 
 def main():
-    race_car = Car(INITIAL_X, INITIAL_Y, RED)
+    race_car = Car(INITIAL_X, INITIAL_Y)
+    race_track = Track()
+    
+    
     running = True
     
     while running:
@@ -40,10 +44,16 @@ def main():
             race_car.right = True
         if key[pygame.K_UP]:
             race_car.forward = True
-            
-        race_car.update()
+         
+        race_car.check_track_limits(race_track)
+    
+        race_car.update(race_track)
+                
+        if race_car.dead:
+            race_car.dead_action()
         
         window.fill(WHITE)
+        race_track.draw(window)
         race_car.display(window)
 
         pygame.display.flip()
