@@ -24,16 +24,19 @@ def main():
     race_car = Car(INITIAL_X, INITIAL_Y)
     race_track = Track()
     
-    
     running = True
     
     while running:
+        
+        race_car.timer += 1/FPS
+        timer_text = font.render(f'Time: {int(race_car.timer)}', True, (0, 0, 0))  # Change the color as needed
+
         
         # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                      
+                    
         key = pygame.key.get_pressed()
         
         if key[pygame.K_q]:
@@ -51,10 +54,14 @@ def main():
                 
         if race_car.dead:
             race_car.dead_action()
-        
+            race_car.timer = 0
+                
         window.fill(WHITE)
         race_track.draw(window)
         race_car.display(window)
+        
+        window.blit(timer_text, (10, 10))  # Change the position as needed
+
 
         pygame.display.flip()
         

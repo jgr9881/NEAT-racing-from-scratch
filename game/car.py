@@ -24,6 +24,7 @@ class Car:
         self.image = pygame.transform.scale(self.original_image, (CAR_WIDTH, CAR_HEIGHT))
         self.dead = False
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.timer = 0
         
     def check_track_limits(self, track):
         if self.x < 0:
@@ -95,4 +96,5 @@ class Car:
         self.move_y = 0
         self.rotate()
         self.move(track)
-        self.reset_data()   
+        self.reset_data() 
+        self.timer += 1  
