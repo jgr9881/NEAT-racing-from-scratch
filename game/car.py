@@ -25,7 +25,31 @@ class Car:
         self.dead = False
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.timer = 0
+        self.radar = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         
+    def calculate_distance(self, point1, point2):
+        return math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
+    
+    def radar_scan(self, track, window):
+        self.radar = [0, 0, 0, 0, 0, 0, 0 ,0, 0]
+        radar_size = len(self.radar)
+        for i in range(radar_size):
+            angle = 180 - i * (180/(radar_size-1)) + self.angle
+            x = self.x
+            y = self.y
+            while True:
+                x += math.cos(math.radians(angle))
+                y -= math.sin(math.radians(angle))
+                if x < 0 or y < 0 or x >= track.image.get_width() or y >= track.image.get_height():
+                    break
+                if self.calculate_distance((self.x, self.y), (x, y)) > RADAR_LENGTH:
+                    break
+                if track.image.get_at((int(x), int(y))) == DEATH_COLOR:
+                    break
+                pygame.draw.line(window, (255, 0, 0), (self.x, self.y), (x, y))
+                self.radar[i] = self.calculate_distance((self.x, self.y), (x, y))
+
+              
     def check_track_limits(self, track):
         if self.x < 0:
             self.dead = True
@@ -36,9 +60,10 @@ class Car:
         if self.y > track.height:
             self.dead = True
         # Check if the car is on the track
-        if track.image.get_at((int(self.x + self.width/2), int(self.y + self.height/2))) != DEATH_COLOR:
+        if track.image.get_at((int(self.x), int(self.y))) == DEATH_COLOR:
             self.dead = True
 
+    
             
     def dead_action(self):
         self.reset_data()
@@ -87,9 +112,10 @@ class Car:
         self.check_track_limits(track)
 
     def display(self, window):
-        temp_image = pygame.transform.rotate(self.image, self.angle)
-        window.blit(temp_image, (self.rect.x, self.rect.y))
-        
+        #temp_image = pygame.transform.rotate(self.image, self.angle)
+        #window.blit(temp_image, (self.rect.x, self.rect.y))
+        pygame.draw.circle(window, (0, 0, 255), (int(self.x), int(self.y)), 5)
+
 
     def update(self, track):
         self.move_x = 0

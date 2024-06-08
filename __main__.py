@@ -29,8 +29,9 @@ def main():
     while running:
         
         race_car.timer += 1/FPS
-        timer_text = font.render(f'Time: {int(race_car.timer)}', True, (0, 0, 0))  # Change the color as needed
-
+        timer_text = font.render(f'Time: {int(race_car.timer)}', True, (0, 0, 0)) 
+        
+        radar_text = font.render(f'Radar: {race_car.radar}', True, (0, 0, 0))
         
         # Event handling
         for event in pygame.event.get():
@@ -59,8 +60,10 @@ def main():
         window.fill(WHITE)
         race_track.draw(window)
         race_car.display(window)
+        race_car.radar_scan(race_track, window)
         
         window.blit(timer_text, (10, 10))  # Change the position as needed
+        window.blit(radar_text, (10, 40))
 
 
         pygame.display.flip()
