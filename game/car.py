@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 from game.globals import *
 
 # TO DO : ADD BRAKES -> FORCES THE AGENT TO BRAKE TO TURN BETTER (rapport between speed and turn speed)
@@ -9,6 +10,7 @@ class Car:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.color = RANDOM_COLOR_LIST[random.randint(0, len(RANDOM_COLOR_LIST) - 1)]
         self.angle = 0
         self.width = CAR_WIDTH
         self.height = CAR_HEIGHT
@@ -25,16 +27,27 @@ class Car:
         self.dead = False
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.timer = 0
-        self.radar = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.radar = []
+        self.radar_angles = []
+        self.show_radar = True
+        self.fitness = 0 # fitness of the car
+    
+    def update_fitness(self, track):
+        if not self.dead:
+            self.fitness += FITNESS_TIME
+            self.fitness += self.speed * FITNESS_SPEED
+            if track.image.get_at((int(self.x), int(self.y))) == CHECKPOINT_COLOR:
+                self.fitness += FITNESS_CHECKPOINT
         
     def calculate_distance(self, point1, point2):
         return math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
     
     def radar_scan(self, track, window):
-        self.radar = [0, 0, 0, 0, 0, 0, 0 ,0, 0]
+        self.radar = RADAR_INIT
+        self.radar_angles = RADAR_ANGLES
         radar_size = len(self.radar)
         for i in range(radar_size):
-            angle = 180 - i * (180/(radar_size-1)) + self.angle
+            angle = self.radar_angles[i] + self.angle
             x = self.x
             y = self.y
             while True:
@@ -46,7 +59,8 @@ class Car:
                     break
                 if track.image.get_at((int(x), int(y))) == DEATH_COLOR:
                     break
-                pygame.draw.line(window, (255, 0, 0), (self.x, self.y), (x, y))
+                if self.show_radar:
+                    pygame.draw.line(window, (255, 0, 0), (self.x, self.y), (x, y), 1)
                 self.radar[i] = self.calculate_distance((self.x, self.y), (x, y))
 
               
@@ -72,6 +86,8 @@ class Car:
         self.angle = 0
         self.speed = MIN_SPEED
         self.dead = False
+        if TEST_MODE:
+            self.fitness = 0
     
     def reset_data(self):
         self.left = False
@@ -114,7 +130,7 @@ class Car:
     def display(self, window):
         #temp_image = pygame.transform.rotate(self.image, self.angle)
         #window.blit(temp_image, (self.rect.x, self.rect.y))
-        pygame.draw.circle(window, (0, 0, 255), (int(self.x), int(self.y)), 5)
+        pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), 5)
 
 
     def update(self, track):
@@ -123,4 +139,5 @@ class Car:
         self.rotate()
         self.move(track)
         self.reset_data() 
-        self.timer += 1  
+        self.timer += 1
+        self.update_fitness(track)  

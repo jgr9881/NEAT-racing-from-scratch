@@ -29,9 +29,11 @@ def main():
     while running:
         
         race_car.timer += 1/FPS
-        timer_text = font.render(f'Time: {int(race_car.timer)}', True, (0, 0, 0)) 
+        timer_text = font.render(f'Time: {int(race_car.timer)}', True, (0, 0, 0))
+        max_fitness_text = font.render(f'Max fitness: {int(race_car.fitness)}', True, (0, 0, 0)) 
+
         
-        radar_text = font.render(f'Radar: {race_car.radar}', True, (0, 0, 0))
+        radar_text = font.render(f'Radar: {[int(x) for x in race_car.radar]}', True, (0, 0, 0))
         
         # Event handling
         for event in pygame.event.get():
@@ -64,6 +66,7 @@ def main():
         
         window.blit(timer_text, (10, 10))  # Change the position as needed
         window.blit(radar_text, (10, 40))
+        window.blit(max_fitness_text, (10, 70))
 
 
         pygame.display.flip()
