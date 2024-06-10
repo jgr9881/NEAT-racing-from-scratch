@@ -2,7 +2,8 @@
 
 import math
 
-TEST_MODE = True # Set to True to test individual cars
+TEST_MODE = False # Set to True to play the game manually
+HEAVY_GRAPHICS = True # Set to True to show the radar and graphic details
 
 # Game constants
 SCREEN_WIDTH, SCREEN_HEIGHT = 1500, 800
@@ -40,30 +41,51 @@ CHECKPOINT_COLOR = BLEU_CHECKPOINT
 
 # Radar constants
 RADAR_LENGTH = 1200
-RADAR_INIT = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 RADAR_ANGLES = [180, 150, 110, 92, 90, 88, 70, 30, 0]
+RADAR_INIT = [0] * len(RADAR_ANGLES)
 
 # Fitness constants
-FITNESS_CHECKPOINT = 1000
-FITNESS_SPEED = 1
+FITNESS_CHECKPOINT = 4000
+FITNESS_SPEED = 3
 FITNESS_TIME = 1
 
 # NEAT constants
-MIN_SYNAPSES = 3
-MIN_GENES = 12
+MIN_SYNAPSES = 1
+NUM_OUTPUTS = 3
+NUM_INPUTS = len(RADAR_ANGLES) + 3
+MIN_GENES = NUM_INPUTS + NUM_OUTPUTS # Number of radar inputs + speed + angle + fitness + 3 outputs (left, right, forward)
+
+
+FIT_POPULATION = 3 # Number of selected individuals to reproduce each generation
+POPULATION_SIZE = 80
+MAX_GENERATIONS = 100
+EVOLVE_RANDOM = 0.8
 
 # Mutation constants
 INIT_MEAN = 0
 INIT_STD = 1
 MUTATION_RATE = 0.8
-MUTATE_POWER = 0.5
+GENE_MUTATE_POWER = 0.4
+SYNAPSE_MUTATE_POWER = 0.4
 REPLACE_RATE = 0.1
-MIN_MUTATE = -20
-MAX_MUTATE = 20
+REPLACE_VARIATION_BIAS = 3
+REPLACE_VARIATION_WEIGHT = 3
+ADD_SYNAPSE_RATE = 0.4
+REMOVE_SYNAPSE_RATE = 0.2
+ADD_GENE_RATE = 0.4
+REMOVE_GENE_RATE = 0.2
 
 # Useful functions
 def deg_to_rad(degrees):
     return degrees / 180.0 * math.pi
 
+def safe_exp(x):
+    # Clamp x to a range that won't cause overflow
+    x = max(min(x, 50), -50)
+    return math.exp(x)
+
 def gene_activation_function(x):
-    return 1 / (1 + math.exp(-x))
+    return 1 / (1 + math.exp(-safe_exp(x)))
+
+def input_activation_function(x):
+    return x

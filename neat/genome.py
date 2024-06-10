@@ -1,6 +1,7 @@
 # group of genes (also known as a chromosome)
 from neat.gene import Gene
 from neat.synapse import Synapse
+import random
 
 class Genome:
     def __init__(self, genome_id, num_inputs, num_outputs, genes, synapses):
@@ -9,8 +10,14 @@ class Genome:
         self.num_outputs = num_outputs
         self.genes = genes
         self.synapses = synapses
+        self.max_layer = 1
+                 
+    def update_layers(self):
+        for gene in self.genes:
+            if gene.layer > self.max_layer:
+                self.max_layer = gene.layer
     
-    def add_gene(self, gene):
+    def add_gene(self, gene):    
         self.genes.append(gene)
         
     def remove_gene(self, gene):
@@ -29,10 +36,11 @@ class Genome:
         return False
     
     def get_gene(self, neuron_id):
+        zero_gene = Gene(0, 0, 0)
         for gene in self.genes:
             if gene.neuron_id == neuron_id:
                 return gene
-        return None
+        return zero_gene
     
     def synapse_exists(self, input_id, output_id):
         for synapse in self.synapses:
@@ -46,8 +54,9 @@ class Genome:
                 return synapse
         return None
     
-    def would_create_cycle(self, input_id, output_id):
-        visited = []
+    def would_create_cycle(self, input_id, output_id, visited=None):
+        if visited is None:
+            visited = []
         if input_id == output_id:
             return True
         visited.append(input_id)
@@ -58,6 +67,9 @@ class Genome:
                         return True
         return False
     
-    def get_new_neuron_id(self):
-        neuron_ids = [gene.neuron_id for gene in self.genes]
-        return max(neuron_ids) + 1
+    def new_neuron_id(self):
+        if len(self.genes) == 0:
+            return 1
+        else :
+            neuron_ids = [gene.neuron_id for gene in self.genes]
+            return max(neuron_ids) + 1
