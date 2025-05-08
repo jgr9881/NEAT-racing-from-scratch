@@ -1,1 +1,1 @@
-Bio-inspired Reinforcement Learning algorithm implemented from scratch. Inspired by the NeuroEvolution of Augmenting Topologies research paper.
+Bio-inspired Reinforcement Learning algorithm implemented from scratch and applied to trajectory optimization in a simple 2D racing simulation. Inspired by the NeuroEvolution of Augmenting Topologies research paper.
